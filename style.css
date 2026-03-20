@@ -1,0 +1,350 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #0a0e27;
+    color: #00ff00;
+    line-height: 1.6;
+}
+
+.navbar {
+    background-color: #1a1f3a;
+    border-bottom: 2px solid #00ff00;
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+}
+
+.logo {
+    font-size: 2rem;
+    color: #00ff00;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px #00ff00;
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+}
+
+.nav-link {
+    color: #00ff00;
+    text-decoration: none;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    border: 1px solid #00ff00;
+    box-shadow: 0 0 10px #00ff00;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.page {
+    display: none;
+    min-height: calc(100vh - 80px);
+    padding-top: 2rem;
+    animation: fadeIn 0.5s ease;
+}
+
+.page.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    color: #00ff00;
+    text-transform: uppercase;
+    text-shadow: 0 0 20px #00ff00;
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+}
+
+.header h2 {
+    font-size: 3rem;
+    color: #00ffff;
+    text-shadow: 0 0 20px #00ffff;
+    margin-bottom: 1rem;
+}
+
+.header p {
+    font-size: 1.2rem;
+    color: #00ff00;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.stat-card {
+    background-color: #1a1f3a;
+    border: 2px solid #00ff00;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 0 15px #00ff00;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px #00ff00;
+}
+
+.stat-number {
+    display: block;
+    font-size: 2.5rem;
+    color: #00ffff;
+    font-weight: bold;
+    text-shadow: 0 0 10px #00ffff;
+}
+
+.stat-label {
+    color: #00ff00;
+    margin-top: 1rem;
+}
+
+.login-form {
+    max-width: 400px;
+    margin: 3rem auto;
+    background-color: #1a1f3a;
+    border: 2px solid #00ff00;
+    padding: 2rem;
+    box-shadow: 0 0 20px #00ff00;
+}
+
+.login-form h2 {
+    color: #00ff00;
+    text-align: center;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 10px #00ff00;
+}
+
+.login-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.login-form input {
+    background-color: #0a0e27;
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    padding: 0.8rem;
+    font-size: 1rem;
+}
+
+.login-form input::placeholder {
+    color: #00ff00;
+    opacity: 0.7;
+}
+
+.login-form input:focus {
+    outline: none;
+    box-shadow: 0 0 10px #00ff00;
+}
+
+.btn-primary {
+    background-color: #00ff00;
+    color: #0a0e27;
+    border: none;
+    padding: 0.8rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #00cc00;
+    box-shadow: 0 0 15px #00ff00;
+}
+
+.form-text {
+    text-align: center;
+    margin-top: 1rem;
+    color: #00ff00;
+    font-size: 0.9rem;
+}
+
+.page h2 {
+    color: #00ff00;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    text-shadow: 0 0 10px #00ff00;
+}
+
+.matches {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.match-card {
+    background-color: #1a1f3a;
+    border: 2px solid #00ff00;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 0 15px #00ff00;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.match-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 25px #00ff00;
+}
+
+.team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.team-name {
+    color: #00ff00;
+    font-weight: bold;
+}
+
+.team-score {
+    font-size: 2rem;
+    color: #00ffff;
+    font-weight: bold;
+    text-shadow: 0 0 10px #00ffff;
+}
+
+.vs {
+    color: #00ff00;
+    margin: 0 1rem;
+    font-weight: bold;
+}
+
+.match-time {
+    color: #00ff00;
+    font-size: 0.9rem;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+.players {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+}
+
+.player-card {
+    background-color: #1a1f3a;
+    border: 2px solid #00ff00;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 0 15px #00ff00;
+    transition: all 0.3s ease;
+}
+
+.player-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px #00ff00;
+}
+
+.player-avatar {
+    width: 80px;
+    height: 80px;
+    background-color: #00ff00;
+    color: #0a0e27;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0 auto 1rem;
+    box-shadow: 0 0 10px #00ff00;
+}
+
+.player-card h3 {
+    color: #00ff00;
+    margin-bottom: 0.5rem;
+}
+
+.player-rating {
+    color: #00ffff;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.player-team {
+    color: #00ff00;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .navbar-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-menu {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .header h1 {
+        font-size: 1.8rem;
+    }
+
+    .header h2 {
+        font-size: 2rem;
+    }
+
+    .match-card {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .vs {
+        margin: 0;
+    }
+}
