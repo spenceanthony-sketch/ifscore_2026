@@ -60,43 +60,7 @@
     <div id="placar" class="page">
         <div class="container">
             <h2>Placares ao Vivo</h2>
-            <div class="matches">
-                <div class="match-card">
-                    <div class="team">
-                        <span class="team-name">Flamengo</span>
-                        <span class="team-score">2</span>
-                    </div>
-                    <div class="vs">vs</div>
-                    <div class="team">
-                        <span class="team-score">1</span>
-                        <span class="team-name">Palmeiras</span>
-                    </div>
-                    <span class="match-time">18:00</span>
-                </div>
-                <div class="match-card">
-                    <div class="team">
-                        <span class="team-name">Corinthians</span>
-                        <span class="team-score">1</span>
-                    </div>
-                    <div class="vs">vs</div>
-                    <div class="team">
-                        <span class="team-score">3</span>
-                        <span class="team-name">São Paulo</span>
-                    </div>
-                    <span class="match-time">21:30</span>
-                </div>
-                <div class="match-card">
-                    <div class="team">
-                        <span class="team-name">Grêmio</span>
-                        <span class="team-score">0</span>
-                    </div>
-                    <div class="vs">vs</div>
-                    <div class="team">
-                        <span class="team-score">0</span>
-                        <span class="team-name">Internacional</span>
-                    </div>
-                    <span class="match-time">19:45</span>
-                </div>
+            <div class="matches" id="matchesContainer">
             </div>
         </div>
     </div>
@@ -104,35 +68,146 @@
     <div id="jogadores" class="page">
         <div class="container">
             <h2>Melhores Jogadores</h2>
-            <div class="players">
-                <div class="player-card">
-                    <div class="player-avatar">M</div>
-                    <h3>Marcus Silva</h3>
-                    <p class="player-rating">⭐ 2.54</p>
-                    <p class="player-team">Flamengo</p>
-                </div>
-                <div class="player-card">
-                    <div class="player-avatar">R</div>
-                    <h3>Renan Torres</h3>
-                    <p class="player-rating">⭐ 1.98</p>
-                    <p class="player-team">Palmeiras</p>
-                </div>
-                <div class="player-card">
-                    <div class="player-avatar">D</div>
-                    <h3>Diego Matos</h3>
-                    <p class="player-rating">⭐ 1.98</p>
-                    <p class="player-team">Corinthians</p>
-                </div>
-                <div class="player-card">
-                    <div class="player-avatar">L</div>
-                    <h3>Lucas Oliveira</h3>
-                    <p class="player-rating">⭐ 2.10</p>
-                    <p class="player-team">São Paulo</p>
-                </div>
+            <div class="players" id="playersContainer">
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // Dados dos placares e jogadores
+        const dados = {
+            matches: [
+                {
+                    team1: "Flamengo",
+                    score1: 2,
+                    team2: "Palmeiras",
+                    score2: 1,
+                    time: "18:00"
+                },
+                {
+                    team1: "Corinthians",
+                    score1: 1,
+                    team2: "São Paulo",
+                    score2: 3,
+                    time: "21:30"
+                },
+                {
+                    team1: "Grêmio",
+                    score1: 0,
+                    team2: "Internacional",
+                    score2: 0,
+                    time: "19:45"
+                }
+            ],
+            players: [
+                {
+                    name: "Marcus Silva",
+                    avatar: "M",
+                    rating: 2.54,
+                    team: "Flamengo"
+                },
+                {
+                    name: "Renan Torres",
+                    avatar: "R",
+                    rating: 1.98,
+                    team: "Palmeiras"
+                },
+                {
+                    name: "Diego Matos",
+                    avatar: "D",
+                    rating: 1.98,
+                    team: "Corinthians"
+                },
+                {
+                    name: "Lucas Oliveira",
+                    avatar: "L",
+                    rating: 2.10,
+                    team: "São Paulo"
+                }
+            ]
+        };
+
+        function showPage(pageName) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            const selectedPage = document.getElementById(pageName);
+            if (selectedPage) {
+                selectedPage.classList.add('active');
+            }
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => link.classList.remove('active'));
+            
+            const activeLink = document.querySelector(`[onclick="showPage('${pageName}')"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (email === 'demo@ifscore.com' && password === '123456') {
+                alert('Login realizado com sucesso!');
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+                showPage('placar');
+            } else {
+                alert('Email ou senha inválidos!');
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+            }
+        }
+
+        function renderMatches() {
+            const container = document.getElementById('matchesContainer');
+            container.innerHTML = '';
+            
+            dados.matches.forEach(match => {
+                const matchCard = document.createElement('div');
+                matchCard.className = 'match-card';
+                matchCard.innerHTML = `
+                    <div class="team">
+                        <span class="team-name">${match.team1}</span>
+                        <span class="team-score">${match.score1}</span>
+                    </div>
+                    <div class="vs">vs</div>
+                    <div class="team">
+                        <span class="team-score">${match.score2}</span>
+                        <span class="team-name">${match.team2}</span>
+                    </div>
+                    <span class="match-time">${match.time}</span>
+                `;
+                container.appendChild(matchCard);
+            });
+        }
+
+        function renderPlayers() {
+            const container = document.getElementById('playersContainer');
+            container.innerHTML = '';
+            
+            dados.players.forEach(player => {
+                const playerCard = document.createElement('div');
+                playerCard.className = 'player-card';
+                playerCard.innerHTML = `
+                    <div class="player-avatar">${player.avatar}</div>
+                    <h3>${player.name}</h3>
+                    <p class="player-rating">⭐ ${player.rating}</p>
+                    <p class="player-team">${player.team}</p>
+                `;
+                container.appendChild(playerCard);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            showPage('home');
+            renderMatches();
+            renderPlayers();
+        });
+    </script>
 </body>
 </html>
