@@ -1,0 +1,51 @@
+{
+  "matches": [
+    {
+      "team1": "Flamengo",
+      "score1": 2,
+      "team2": "Palmeiras",
+      "score2": 1,
+      "time": "18:00"
+    },
+    {
+      "team1": "Corinthians",
+      "score1": 1,
+      "team2": "São Paulo",
+      "score2": 3,
+      "time": "21:30"
+    },
+    {
+      "team1": "Grêmio",
+      "score1": 0,
+      "team2": "Internacional",
+      "score2": 0,
+      "time": "19:45"
+    }
+  ],
+  "players": [
+    {
+      "name": "Marcus Silva",
+      "avatar": "M",
+      "rating": 2.54,
+      "team": "Flamengo"
+    },
+    {
+      "name": "Renan Torres",
+      "avatar": "R",
+      "rating": 1.98,
+      "team": "Palmeiras"
+    },
+    {
+      "name": "Diego Matos",
+      "avatar": "D",
+      "rating": 1.98,
+      "team": "Corinthians"
+    },
+    {
+      "name": "Lucas Oliveira",
+      "avatar": "L",
+      "rating": 2.10,
+      "team": "São Paulo"
+    }
+  ]
+}
