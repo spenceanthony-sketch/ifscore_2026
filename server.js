@@ -10,6 +10,7 @@ const PORT = 3000;
 app.use(morgan('dev')); // Log de requisições
 app.use(cors()); // Permitir requisições de diferentes origens
 app.use(bodyParser.json()); // Parse de JSON no corpo da requisição
+app.use(express.static('public'))
 
 // Armazenamento temporário em arrays (Simulando um Banco de Dados)
 let matches = [
@@ -133,9 +134,9 @@ app.delete('/api/players/:id', (req, res) => {
 });
 
 // Rota para verificar se o servidor está rodando
-app.get('/', (req, res) => {
-    res.send('API IFScore rodando com sucesso!');
-});
+// app.get('/', (req, res) => {
+//     res.send('API IFScore rodando com sucesso!');
+// });
 
 // Inicialização do servidor
 app.listen(PORT, () => {
