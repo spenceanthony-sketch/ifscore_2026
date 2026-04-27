@@ -1,0 +1,53 @@
+### Variáveis
+@baseUrl = http://localhost:3000/api
+
+### 1. Testar Rota Inicial do Servidor
+GET http://localhost:3000/
+
+### --- TESTES DE PARTIDAS (MATCHES) ---
+
+### Listar todas as partidas
+GET {{baseUrl}}/matches
+
+### Criar uma nova partida
+POST {{baseUrl}}/matches
+Content-Type: application/json
+
+{
+    "team1": "Vasco",
+    "score1": 1,
+    "team2": "Botafogo",
+    "score2": 0,
+    "time": "16:00"
+}
+
+### Atualizar uma partida (ID 1)
+PUT {{baseUrl}}/matches/1
+Content-Type: application/json
+
+{
+    "score1": 3,
+    "score2": 2
+}
+
+### Deletar uma partida (ID 2)
+DELETE {{baseUrl}}/matches/2
+
+
+### --- TESTES DE JOGADORES (PLAYERS) ---
+
+### Listar todos os jogadores
+GET {{baseUrl}}/players
+
+### Criar um novo jogador
+POST {{baseUrl}}/players
+Content-Type: application/json
+
+{
+    "name": "Gabriel Barbosa",
+    "rating": 2.85,
+    "team": "Flamengo"
+}
+
+### Deletar um jogador (ID 3)
+DELETE {{baseUrl}}/players/3
