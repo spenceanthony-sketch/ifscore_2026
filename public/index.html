@@ -15,6 +15,7 @@
                 <li><a href="#" class="nav-link" onclick="showPage('login'); return false;">Login</a></li>
                 <li><a href="#" class="nav-link" onclick="showPage('placar'); return false;">Placar</a></li>
                 <li><a href="#" class="nav-link" onclick="showPage('jogadores'); return false;">Jogadores</a></li>
+                <li><a href="#" class="nav-link" onclick="showPage('admin'); return false;">Admin</a></li>
             </ul>
         </div>
     </nav>
@@ -75,6 +76,27 @@
         </div>
     </div>
 
+    <div id="admin" class="page">
+        <div class="container">
+            <h2>Cadastrar Nova Partida</h2>
+            <div class="login-form">
+                <form onsubmit="handleCreateMatch(event)">
+                    <input type="text" id="time_casa" placeholder="Time da Casa" required>
+                    <input type="text" id="time_fora" placeholder="Time de Fora" required>
+                    <input type="number" id="placar_casa" placeholder="Placar Casa" value="0">
+                    <input type="number" id="placar_fora" placeholder="Placar Fora" value="0">
+                    <input type="date" id="data_jogo" required>
+                    <select id="status">
+                        <option value="Agendado">Agendado</option>
+                        <option value="Em andamento">Em andamento</option>
+                        <option value="Finalizado">Finalizado</option>
+                    </select>
+                    <button type="submit" class="btn-primary">Salvar Partida</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_URL = '/api';
 
@@ -98,6 +120,41 @@
             // Atualizar dados ao entrar na página
             if (pageName === 'placar') renderMatches();
             if (pageName === 'jogadores') renderPlayers();
+        }
+
+        async function handleCreateMatch(event) {
+            event.preventDefault();
+            
+            const data = {
+                time_casa: document.getElementById('time_casa').value,
+                time_fora: document.getElementById('time_fora').value,
+                placar_casa: parseInt(document.getElementById('placar_casa').value),
+                placar_fora: parseInt(document.getElementById('placar_fora').value),
+                data_jogo: document.getElementById('data_jogo').value,
+                status: document.getElementById('status').value
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/matches`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    alert('Partida cadastrada com sucesso!');
+                    event.target.reset();
+                    showPage('placar');
+                } else {
+                    const error = await response.json();
+                    alert('Erro ao cadastrar: ' + error.error);
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro de conexão com o servidor.');
+            }
         }
 
         function handleLogin(event) {
@@ -132,58 +189,58 @@
                 }
 
                 matches.forEach(match => {
-                    const matchCard = document.createElement('div');
-                    matchCard.className = 'match-card';
-                    matchCard.innerHTML = `
-                        <div class="team">
-                            <span class="team-name">${match.team1}</span>
-                            <span class="team-score">${match.score1}</span>
-                        </div>
-                        <div class="vs">vs</div>
-                        <div class="team">
-                            <span class="team-score">${match.score2}</span>
-                            <span class="team-name">${match.team2}</span>
-                        </div>
-                        <span class="match-time">${match.time}</span>
-                    `;
-                    container.appendChild(matchCard);
-                });
+	                    const matchCard = document.createElement('div');
+	                    matchCard.className = 'match-card';
+	                    matchCard.innerHTML = `
+	                        <div class="team">
+	                            <span class="team-name">${match.time_casa}</span>
+	                            <span class="team-score">${match.placar_casa}</span>
+	                        </div>
+	                        <div class="vs">vs</div>
+	                        <div class="team">
+	                            <span class="team-score">${match.placar_fora}</span>
+	                            <span class="team-name">${match.time_fora}</span>
+	                        </div>
+	                        <span class="match-time">${match.data_jogo}</span>
+	                    `;
+	                    container.appendChild(matchCard);
+	                });
             } catch (error) {
                 console.error('Erro ao buscar partidas:', error);
                 container.innerHTML = '<p>Erro ao carregar partidas do servidor.</p>';
             }
         }
 
-        // Função para buscar jogadores do Back-end
-        async function renderPlayers() {
-            const container = document.getElementById('playersContainer');
-            
-            try {
-                const response = await fetch(`${API_URL}/players`);
-                const players = await response.json();
-                
-                container.innerHTML = '';
-                if (players.length === 0) {
-                    container.innerHTML = '<p>Nenhum jogador encontrado.</p>';
-                    return;
-                }
-
-                players.forEach(player => {
-                    const playerCard = document.createElement('div');
-                    playerCard.className = 'player-card';
-                    playerCard.innerHTML = `
-                        <div class="player-avatar">${player.avatar}</div>
-                        <h3>${player.name}</h3>
-                        <p class="player-rating">⭐ ${player.rating}</p>
-                        <p class="player-team">${player.team}</p>
-                    `;
-                    container.appendChild(playerCard);
-                });
-            } catch (error) {
-                console.error('Erro ao buscar jogadores:', error);
-                container.innerHTML = '<p>Erro ao carregar jogadores do servidor.</p>';
-            }
-        }
+        // Função para buscar usuários do Back-end
+	        async function renderPlayers() {
+	            const container = document.getElementById('playersContainer');
+	            
+	            try {
+	                const response = await fetch(`${API_URL}/users`);
+	                const users = await response.json();
+	                
+	                container.innerHTML = '';
+	                if (users.length === 0) {
+	                    container.innerHTML = '<p>Nenhum usuário encontrado.</p>';
+	                    return;
+	                }
+	
+	                users.forEach(user => {
+	                    const playerCard = document.createElement('div');
+	                    playerCard.className = 'player-card';
+	                    playerCard.innerHTML = `
+	                        <div class="player-avatar">👤</div>
+	                        <h3>${user.nome_completo}</h3>
+	                        <p class="player-rating">${user.perfil}</p>
+	                        <p class="player-team">${user.email}</p>
+	                    `;
+	                    container.appendChild(playerCard);
+	                });
+	            } catch (error) {
+	                console.error('Erro ao buscar usuários:', error);
+	                container.innerHTML = '<p>Erro ao carregar dados do servidor.</p>';
+	            }
+	        }
 
         document.addEventListener('DOMContentLoaded', function() {
             showPage('home');
