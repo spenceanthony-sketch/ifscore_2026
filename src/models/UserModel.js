@@ -1,32 +1,29 @@
-const db = require('../config/database');
+const prisma = require('../lib/prisma');
 
 class UserModel {
-    static getAll() {
-        return new Promise((resolve, reject) => {
-            db.all("SELECT id_usuario, nome_completo, email, data_registro, perfil FROM Usuario", [], (err, rows) => {
-                if (err) reject(err);
-                resolve(rows);
-            });
+    static async getAll() {
+        return await prisma.usuario.findMany({
+            include: {
+                papel: true
+            }
         });
     }
 
-    static create(data) {
-        const { senha, nome_completo, email, data_registro, perfil } = data;
-        return new Promise((resolve, reject) => {
-            const sql = `INSERT INTO Usuario (senha, nome_completo, email, data_registro, perfil) VALUES (?, ?, ?, ?, ?)`;
-            db.run(sql, [senha, nome_completo, email, data_registro, perfil], function(err) {
-                if (err) reject(err);
-                resolve({ id: this.lastID, nome_completo, email, perfil });
-            });
+    static async create(data) {
+        return await prisma.usuario.create({
+            data: {
+                senha: data.senha,
+                nome_completo: data.nome_completo,
+                email: data.email,
+                perfil: data.perfil, // Deve ser um ID de papel existente
+                data_registro: new Date()
+            }
         });
     }
 
-    static delete(id) {
-        return new Promise((resolve, reject) => {
-            db.run("DELETE FROM Usuario WHERE id_usuario = ?", [id], function(err) {
-                if (err) reject(err);
-                resolve(this.changes > 0);
-            });
+    static async findByEmail(email) {
+        return await prisma.usuario.findUnique({
+            where: { email }
         });
     }
 }
