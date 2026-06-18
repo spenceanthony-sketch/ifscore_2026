@@ -189,22 +189,22 @@
                 }
 
                 matches.forEach(match => {
-	                    const matchCard = document.createElement('div');
-	                    matchCard.className = 'match-card';
-	                    matchCard.innerHTML = `
-	                        <div class="team">
-	                            <span class="team-name">${match.time_casa}</span>
-	                            <span class="team-score">${match.placar_casa}</span>
-	                        </div>
-	                        <div class="vs">vs</div>
-	                        <div class="team">
-	                            <span class="team-score">${match.placar_fora}</span>
-	                            <span class="team-name">${match.time_fora}</span>
-	                        </div>
-	                        <span class="match-time">${match.data_jogo}</span>
-	                    `;
-	                    container.appendChild(matchCard);
-	                });
+                    const matchCard = document.createElement('div');
+                    matchCard.className = 'match-card';
+                    matchCard.innerHTML = `
+                        <div class="team">
+                            <span class="team-name">${match.time_casa}</span>
+                            <span class="team-score">${match.placar_casa}</span>
+                        </div>
+                        <div class="vs">vs</div>
+                        <div class="team">
+                            <span class="team-score">${match.placar_fora}</span>
+                            <span class="team-name">${match.time_fora}</span>
+                        </div>
+                        <span class="match-time">${match.data_jogo}</span>
+                    `;
+                    container.appendChild(matchCard);
+                });
             } catch (error) {
                 console.error('Erro ao buscar partidas:', error);
                 container.innerHTML = '<p>Erro ao carregar partidas do servidor.</p>';
@@ -212,35 +212,35 @@
         }
 
         // Função para buscar usuários do Back-end
-	        async function renderPlayers() {
-	            const container = document.getElementById('playersContainer');
-	            
-	            try {
-	                const response = await fetch(`${API_URL}/users`);
-	                const users = await response.json();
-	                
-	                container.innerHTML = '';
-	                if (users.length === 0) {
-	                    container.innerHTML = '<p>Nenhum usuário encontrado.</p>';
-	                    return;
-	                }
-	
-	                users.forEach(user => {
-	                    const playerCard = document.createElement('div');
-	                    playerCard.className = 'player-card';
-	                    playerCard.innerHTML = `
-	                        <div class="player-avatar">👤</div>
-	                        <h3>${user.nome_completo}</h3>
-	                        <p class="player-rating">${user.perfil}</p>
-	                        <p class="player-team">${user.email}</p>
-	                    `;
-	                    container.appendChild(playerCard);
-	                });
-	            } catch (error) {
-	                console.error('Erro ao buscar usuários:', error);
-	                container.innerHTML = '<p>Erro ao carregar dados do servidor.</p>';
-	            }
-	        }
+        async function renderPlayers() {
+            const container = document.getElementById('playersContainer');
+            
+            try {
+                const response = await fetch(`${API_URL}/users`);
+                const users = await response.json();
+                
+                container.innerHTML = '';
+                if (users.length === 0) {
+                    container.innerHTML = '<p>Nenhum usuário encontrado.</p>';
+                    return;
+                }
+
+                users.forEach(user => {
+                    const playerCard = document.createElement('div');
+                    playerCard.className = 'player-card';
+                    playerCard.innerHTML = `
+                        <div class="player-avatar">👤</div>
+                        <h3>${user.nome_completo}</h3>
+                        <p class="player-rating">${user.perfil}</p>
+                        <p class="player-team">${user.email}</p>
+                    `;
+                    container.appendChild(playerCard);
+                });
+            } catch (error) {
+                console.error('Erro ao buscar usuários:', error);
+                container.innerHTML = '<p>Erro ao carregar dados do servidor.</p>';
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
             showPage('home');
