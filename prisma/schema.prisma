@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Papel {
+  id_papel   String   @id
+  nome_papel String
+  usuarios   Usuario[]
+  configs    ConfigSistema[]
+}
+
+model Usuario {
+  id_usuario    Int      @id @default(autoincrement())
+  senha         String
+  nome_completo String
+  email         String   @unique
+  data_registro DateTime @default(now())
+  perfil        String
+  papel         Papel    @relation(fields: [perfil], references: [id_papel])
+  denuncias     Denuncia[]
+  contatos      ContatoAdmin[]
+}
+
+model ConfigSistema {
+  id_config_sistema String @id
+  politicas_gerais  String
+  id_papel_fk       String
+  papel             Papel  @relation(fields: [id_papel_fk], references: [id_papel])
+}
+
+model Denuncia {
+  id_denuncia    Int      @id @default(autoincrement())
+  relato_usuario String
+  data_registro  DateTime @default(now())
+  status         String
+  id_usuario_fk  Int
+  usuario        Usuario  @relation(fields: [id_usuario_fk], references: [id_usuario])
+  setores        SetorResponsavel[]
+}
+
+model SetorResponsavel {
+  id_setor        Int      @id @default(autoincrement())
+  nome_setor      String
+  email_setor     String
+  id_denuncia_fk  Int
+  denuncia        Denuncia @relation(fields: [id_denuncia_fk], references: [id_denuncia])
+}
+
+model ContatoAdmin {
+  id_contato    Int     @id @default(autoincrement())
+  numero_suporte String
+  id_usuario_fk Int
+  usuario       Usuario @relation(fields: [id_usuario_fk], references: [id_usuario])
+}
+
+model Jogo {
+  id_jogo     Int      @id @default(autoincrement())
+  data_jogo   DateTime
+  time_casa   String
+  time_fora   String
+  placar_casa Int      @default(0)
+  placar_fora Int      @default(0)
+  status      String   @default("Agendado")
+  estatisticas EstatisticaJogo[]
+}
+
+model EstatisticaJogo {
+  id_stats           Int      @id @default(autoincrement())
+  player_stats       Int
+  descricao_stats    String
+  timestamp_registro DateTime @default(now())
+  id_jogo            Int
+  jogo               Jogo     @relation(fields: [id_jogo], references: [id_jogo])
+}
