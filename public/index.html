@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IFScore - Placar Esportivo</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos adicionais para o Modal e Botões */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); }
+        .modal-content { background-color: #222; margin: 10% auto; padding: 20px; border: 1px solid #4CAF50; width: 80%; max-width: 500px; border-radius: 8px; color: white; }
+        .btn-delete { background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-left: 5px; }
+        .btn-edit { background: #ffcc00; color: black; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        .match-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 1px solid #444; width: 100%; }
+        .btn-primary:disabled { background: #555; cursor: not-allowed; }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -80,7 +89,7 @@
         <div class="container">
             <h2>Cadastrar Nova Partida</h2>
             <div class="login-form">
-                <form onsubmit="handleCreateMatch(event)">
+                <form id="createMatchForm" onsubmit="handleCreateMatch(event)">
                     <input type="text" id="time_casa" placeholder="Time da Casa" required>
                     <input type="text" id="time_fora" placeholder="Time de Fora" required>
                     <input type="number" id="placar_casa" placeholder="Placar Casa" value="0">
@@ -91,9 +100,31 @@
                         <option value="Em andamento">Em andamento</option>
                         <option value="Finalizado">Finalizado</option>
                     </select>
-                    <button type="submit" class="btn-primary">Salvar Partida</button>
+                    <button type="submit" id="btnSaveMatch" class="btn-primary">Salvar Partida</button>
                 </form>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edição -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h2>Editar Partida</h2>
+            <form onsubmit="handleUpdateMatch(event)">
+                <input type="hidden" id="edit_id">
+                <input type="text" id="edit_time_casa" placeholder="Time da Casa" required style="width:100%; padding:10px; margin-bottom:10px; background:#333; color:white; border:1px solid #444;">
+                <input type="text" id="edit_time_fora" placeholder="Time de Fora" required style="width:100%; padding:10px; margin-bottom:10px; background:#333; color:white; border:1px solid #444;">
+                <input type="number" id="edit_placar_casa" placeholder="Placar Casa" required style="width:100%; padding:10px; margin-bottom:10px; background:#333; color:white; border:1px solid #444;">
+                <input type="number" id="edit_placar_fora" placeholder="Placar Fora" required style="width:100%; padding:10px; margin-bottom:10px; background:#333; color:white; border:1px solid #444;">
+                <input type="date" id="edit_data_jogo" required style="width:100%; padding:10px; margin-bottom:10px; background:#333; color:white; border:1px solid #444;">
+                <select id="edit_status" style="width:100%; padding:10px; margin-bottom:10px; background:#333; color:white; border:1px solid #444;">
+                    <option value="Agendado">Agendado</option>
+                    <option value="Em andamento">Em andamento</option>
+                    <option value="Finalizado">Finalizado</option>
+                </select>
+                <button type="submit" class="btn-primary">Atualizar Dados</button>
+                <button type="button" onclick="closeModal()" style="background:#555; margin-top:10px" class="btn-primary">Cancelar</button>
+            </form>
         </div>
     </div>
 
@@ -112,18 +143,20 @@
             const navLinks = document.querySelectorAll('.nav-link');
             navLinks.forEach(link => link.classList.remove('active'));
             
-            const activeLink = document.querySelector(`[onclick="showPage('${pageName}')"]`);
+            const activeLink = document.querySelector(`[onclick="showPage('${pageName}'); return false;"]`);
             if (activeLink) {
                 activeLink.classList.add('active');
             }
 
-            // Atualizar dados ao entrar na página
             if (pageName === 'placar') renderMatches();
             if (pageName === 'jogadores') renderPlayers();
         }
 
         async function handleCreateMatch(event) {
             event.preventDefault();
+            const btn = document.getElementById('btnSaveMatch');
+            btn.disabled = true; // TRAVA ANTI-DUPLICATA
+            btn.innerText = 'Salvando...';
             
             const data = {
                 time_casa: document.getElementById('time_casa').value,
@@ -137,9 +170,7 @@
             try {
                 const response = await fetch(`${API_URL}/matches`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
 
@@ -154,30 +185,14 @@
             } catch (error) {
                 console.error('Erro:', error);
                 alert('Erro de conexão com o servidor.');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Salvar Partida';
             }
         }
 
-        function handleLogin(event) {
-            event.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            if (email === 'demo@ifscore.com' && password === '123456') {
-                alert('Login realizado com sucesso!');
-                document.getElementById('email').value = '';
-                document.getElementById('password').value = '';
-                showPage('placar');
-            } else {
-                alert('Email ou senha inválidos!');
-                document.getElementById('email').value = '';
-                document.getElementById('password').value = '';
-            }
-        }
-
-        // Função para buscar partidas do Back-end
         async function renderMatches() {
             const container = document.getElementById('matchesContainer');
-            
             try {
                 const response = await fetch(`${API_URL}/matches`);
                 const matches = await response.json();
@@ -201,7 +216,13 @@
                             <span class="team-score">${match.placar_fora}</span>
                             <span class="team-name">${match.time_fora}</span>
                         </div>
-                        <span class="match-time">${match.data_jogo}</span>
+                        <div class="match-footer">
+                            <span class="match-time">${new Date(match.data_jogo).toLocaleDateString()} | ${match.status}</span>
+                            <div>
+                                <button class="btn-edit" onclick="openEditModal('${match.id_jogo}', '${match.time_casa}', '${match.time_fora}', ${match.placar_casa}, ${match.placar_fora}, '${match.data_jogo}', '${match.status}')">✏️ Editar</button>
+                                <button class="btn-delete" onclick="handleDeleteMatch(${match.id_jogo})">🗑️ Excluir</button>
+                            </div>
+                        </div>
                     `;
                     container.appendChild(matchCard);
                 });
@@ -211,33 +232,91 @@
             }
         }
 
-        // Função para buscar usuários do Back-end
+        function openEditModal(id, casa, fora, pCasa, pFora, data, status) {
+            document.getElementById('edit_id').value = id;
+            document.getElementById('edit_time_casa').value = casa;
+            document.getElementById('edit_time_fora').value = fora;
+            document.getElementById('edit_placar_casa').value = pCasa;
+            document.getElementById('edit_placar_fora').value = pFora;
+            document.getElementById('edit_data_jogo').value = data.split('T')[0];
+            document.getElementById('edit_status').value = status;
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        function closeModal() { document.getElementById('editModal').style.display = 'none'; }
+
+        async function handleUpdateMatch(event) {
+            event.preventDefault();
+            const id = document.getElementById('edit_id').value;
+            const data = {
+                time_casa: document.getElementById('edit_time_casa').value,
+                time_fora: document.getElementById('edit_time_fora').value,
+                placar_casa: parseInt(document.getElementById('edit_placar_casa').value),
+                placar_fora: parseInt(document.getElementById('edit_placar_fora').value),
+                data_jogo: document.getElementById('edit_data_jogo').value,
+                status: document.getElementById('edit_status').value
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/matches/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    alert('Partida atualizada!');
+                    closeModal();
+                    renderMatches();
+                } else {
+                    alert('Erro ao atualizar.');
+                }
+            } catch (error) {
+                alert('Erro de conexão.');
+            }
+        }
+
+        async function handleDeleteMatch(id) {
+            if (!confirm('Tem certeza que deseja excluir esta partida?')) return;
+            try {
+                const response = await fetch(`${API_URL}/matches/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    alert('Partida excluída!');
+                    renderMatches();
+                } else {
+                    alert('Erro ao excluir.');
+                }
+            } catch (error) {
+                alert('Erro de conexão.');
+            }
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            if (email === 'demo@ifscore.com' && password === '123456') {
+                alert('Login realizado com sucesso!');
+                showPage('placar');
+            } else {
+                alert('Email ou senha inválidos!');
+            }
+        }
+
         async function renderPlayers() {
             const container = document.getElementById('playersContainer');
-            
             try {
                 const response = await fetch(`${API_URL}/users`);
                 const users = await response.json();
-                
-                container.innerHTML = '';
-                if (users.length === 0) {
-                    container.innerHTML = '<p>Nenhum usuário encontrado.</p>';
-                    return;
-                }
-
-                users.forEach(user => {
-                    const playerCard = document.createElement('div');
-                    playerCard.className = 'player-card';
-                    playerCard.innerHTML = `
+                container.innerHTML = users.map(user => `
+                    <div class="player-card">
                         <div class="player-avatar">👤</div>
                         <h3>${user.nome_completo}</h3>
                         <p class="player-rating">${user.perfil}</p>
                         <p class="player-team">${user.email}</p>
-                    `;
-                    container.appendChild(playerCard);
-                });
+                    </div>
+                `).join('');
             } catch (error) {
-                console.error('Erro ao buscar usuários:', error);
                 container.innerHTML = '<p>Erro ao carregar dados do servidor.</p>';
             }
         }
