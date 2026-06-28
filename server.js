@@ -3,13 +3,9 @@ const morgan = require('morgan');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const routes = require('./src/routes');
-const initDb = require('./src/config/initDb');
 
 const app = express();
 const PORT = 3000;
-
-// Inicializa o Banco de Dados
-initDb();
 
 // Middlewares
 app.use(morgan('dev'));
