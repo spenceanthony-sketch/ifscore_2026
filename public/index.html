@@ -1,329 +1,44 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IFScore - Placar Esportivo</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        /* Estilos adicionais para o Modal e Botões */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); }
-        .modal-content { background-color: #222; margin: 10% auto; padding: 20px; border: 1px solid #4CAF50; width: 80%; max-width: 500px; border-radius: 8px; color: white; }
-        .btn-delete { background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-left: 5px; }
-        .btn-edit { background: #ffcc00; color: black; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
-        .match-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 1px solid #444; width: 100%; }
-        .btn-primary:disabled { background: #555; cursor: not-allowed; }
-    </style>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IFScore - Placar Esportivo</title><link rel="stylesheet" href="style.css">
+  <style>
+    .auth-box{max-width:430px;margin:2rem auto;background:#1a1f3a;border:2px solid #00ff00;padding:2rem;box-shadow:0 0 20px #00ff00}.auth-box form{display:flex;flex-direction:column;gap:1rem}.auth-box input,.auth-box select{background:#0a0e27;border:1px solid #00ff00;color:#00ff00;padding:.8rem;font-size:1rem}.auth-error{color:#ff7070;min-height:1.3rem}.auth-success{color:#7dff7d}.user-status{color:#00ffff;margin-left:1rem}.logout{color:#ff7070!important;cursor:pointer}.protected-note{max-width:700px;margin:2rem auto;padding:1rem;border:1px solid #00ffff;color:#00ffff;text-align:center}.match-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+  </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="navbar-container">
-            <h1 class="logo">IFScore</h1>
-            <ul class="nav-menu">
-                <li><a href="#" class="nav-link active" onclick="showPage('home'); return false;">Home</a></li>
-                <li><a href="#" class="nav-link" onclick="showPage('login'); return false;">Login</a></li>
-                <li><a href="#" class="nav-link" onclick="showPage('placar'); return false;">Placar</a></li>
-                <li><a href="#" class="nav-link" onclick="showPage('jogadores'); return false;">Jogadores</a></li>
-                <li><a href="#" class="nav-link" onclick="showPage('admin'); return false;">Admin</a></li>
-            </ul>
-        </div>
-    </nav>
+<nav class="navbar"><div class="navbar-container"><h1 class="logo">IFScore</h1><ul class="nav-menu">
+  <li><a href="#" class="nav-link active" onclick="showPage('home' );return false">Home</a></li>
+  <li><a href="#" class="nav-link" onclick="showPage('login');return false">Entrar</a></li>
+  <li><a href="#" class="nav-link" onclick="showPage('signup');return false">Cadastrar</a></li>
+  <li><a href="#" class="nav-link" onclick="showPage('placar');return false">Placar</a></li>
+  <li><a href="#" class="nav-link" onclick="showPage('jogadores');return false">Usuários</a></li>
+  <li><a href="#" class="nav-link" onclick="showPage('admin');return false">Admin</a></li>
+  <li><a id="authStatus" class="nav-link" href="#" onclick="logout();return false">Não autenticado</a></li>
+</ul></div></nav>
 
-    <div id="home" class="page active">
-        <div class="container">
-            <div class="header">
-                <h1>SUA PAIXÃO POR ESPORTES COMEÇA AQUI</h1>
-                <h2>IFScore</h2>
-                <p>Acompanhe placares, estatísticas e seus times favoritos em tempo real</p>
-            </div>
-            <div class="stats">
-                <div class="stat-card">
-                    <span class="stat-number">150+</span>
-                    <p class="stat-label">Jogos Acompanhados</p>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number">2.5K</span>
-                    <p class="stat-label">Usuários Ativos</p>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number">98%</span>
-                    <p class="stat-label">Precisão de Dados</p>
-                </div>
-            </div>
-        </div>
-    </div>
+<section id="home" class="page active"><div class="container"><div class="header"><h1>SUA PAIXÃO POR ESPORTES COMEÇA AQUI</h1><h2>IFScore</h2><p>Acompanhe placares, estatísticas e seus times favoritos em tempo real</p></div><div class="stats"><div class="stat-card"><span class="stat-number">150+</span><p class="stat-label">Jogos Acompanhados</p></div><div class="stat-card"><span class="stat-number">2.5K</span><p class="stat-label">Usuários Ativos</p></div><div class="stat-card"><span class="stat-number">98%</span><p class="stat-label">Precisão de Dados</p></div></div></div></section>
 
-    <div id="login" class="page">
-        <div class="container">
-            <div class="login-form">
-                <h2>Fazer Login</h2>
-                <form onsubmit="handleLogin(event)">
-                    <input type="email" id="email" placeholder="Email" required>
-                    <input type="password" id="password" placeholder="Senha" required>
-                    <button type="submit" class="btn-primary">Entrar</button>
-                </form>
-                <p class="form-text">Email: demo@ifscore.com | Senha: 123456</p>
-            </div>
-        </div>
-    </div>
+<section id="login" class="page"><div class="container"><div class="auth-box"><h2>Entrar</h2><form onsubmit="handleLogin(event)"><input type="email" id="loginEmail" placeholder="E-mail" required><input type="password" id="loginPassword" placeholder="Senha" required minlength="6"><button class="btn-primary">Entrar</button><p id="loginMessage" class="auth-error"></p></form><p class="form-text">Ainda não possui conta? <a href="#" onclick="showPage('signup');return false">Cadastre-se</a></p></div></div></section>
+<section id="signup" class="page"><div class="container"><div class="auth-box"><h2>Criar conta</h2><form onsubmit="handleSignup(event)"><input type="text" id="signupName" placeholder="Nome completo" required minlength="2"><input type="email" id="signupEmail" placeholder="E-mail" required><input type="password" id="signupPassword" placeholder="Senha (mínimo 6 caracteres)" required minlength="6"><button class="btn-primary">Cadastrar</button><p id="signupMessage" class="auth-error"></p></form></div></div></section>
 
-    <div id="placar" class="page">
-        <div class="container">
-            <h2>Placares ao Vivo</h2>
-            <div class="matches" id="matchesContainer">
-                <p>Carregando partidas...</p>
-            </div>
-        </div>
-    </div>
+<section id="placar" class="page"><div class="container"><h2>Placares</h2><div id="matchesContainer" class="matches"><p>Carregando partidas...</p></div></div></section>
+<section id="jogadores" class="page"><div class="container"><h2>Usuários cadastrados</h2><div id="playersContainer" class="players"><p>Faça login para consultar os usuários.</p></div></div></section>
+<section id="admin" class="page"><div class="container"><h2>Área administrativa protegida</h2><p class="protected-note">Somente usuários autenticados podem cadastrar e editar partidas.</p><div class="auth-box"><form onsubmit="handleCreateMatch(event)"><input type="text" id="time_casa" placeholder="Time da casa" required><input type="text" id="time_fora" placeholder="Time de fora" required><input type="number" id="placar_casa" value="0" min="0"><input type="number" id="placar_fora" value="0" min="0"><input type="date" id="data_jogo" required><select id="status"><option>Agendado</option><option>Em andamento</option><option>Finalizado</option></select><button class="btn-primary">Salvar partida</button><p id="adminMessage" class="auth-error"></p></form></div></div></section>
 
-    <div id="jogadores" class="page">
-        <div class="container">
-            <h2>Melhores Jogadores</h2>
-            <div class="players" id="playersContainer">
-                <p>Carregando jogadores...</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="admin" class="page">
-        <div class="container">
-            <h2>Cadastrar Nova Partida</h2>
-            <div class="login-form">
-                <form id="createMatchForm" onsubmit="handleCreateMatch(event)">
-                    <input type="text" id="time_casa" placeholder="Time da Casa" required>
-                    <input type="text" id="time_fora" placeholder="Time de Fora" required>
-                    <input type="number" id="placar_casa" placeholder="Placar Casa" value="0">
-                    <input type="number" id="placar_fora" placeholder="Placar Fora" value="0">
-                    <input type="date" id="data_jogo" required>
-                    <select id="status">
-                        <option value="Agendado">Agendado</option>
-                        <option value="Em andamento">Em andamento</option>
-                        <option value="Finalizado">Finalizado</option>
-                    </select>
-                    <button type="submit" id="btnSaveMatch" class="btn-primary">Salvar Partida</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Edição -->
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <h2>Editar Partida</h2>
-            <form onsubmit="handleUpdateMatch(event)">
-                <input type="hidden" id="edit_id">
-                <input type="text" id="edit_time_casa" placeholder="Time da Casa" required style="width:100%; padding:10px; margin-bottom:10px; background:#333; color:white; border:1px solid #444;">
-                <input type="text" id="edit_time_fora" placeholder="Time de Fora" required style="width:100%; padding:10px; margin-bottom:10px; background:#333; color:white; border:1px solid #444;">
-                <input type="number" id="edit_placar_casa" placeholder="Placar Casa" required style="width:100%; padding:10px; margin-bottom:10px; background:#333; color:white; border:1px solid #444;">
-                <input type="number" id="edit_placar_fora" placeholder="Placar Fora" required style="width:100%; padding:10px; margin-bottom:10px; background:#333; color:white; border:1px solid #444;">
-                <input type="date" id="edit_data_jogo" required style="width:100%; padding:10px; margin-bottom:10px; background:#333; color:white; border:1px solid #444;">
-                <select id="edit_status" style="width:100%; padding:10px; margin-bottom:10px; background:#333; color:white; border:1px solid #444;">
-                    <option value="Agendado">Agendado</option>
-                    <option value="Em andamento">Em andamento</option>
-                    <option value="Finalizado">Finalizado</option>
-                </select>
-                <button type="submit" class="btn-primary">Atualizar Dados</button>
-                <button type="button" onclick="closeModal()" style="background:#555; margin-top:10px" class="btn-primary">Cancelar</button>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        const API_URL = '/api';
-
-        function showPage(pageName) {
-            const pages = document.querySelectorAll('.page');
-            pages.forEach(page => page.classList.remove('active'));
-            
-            const selectedPage = document.getElementById(pageName);
-            if (selectedPage) {
-                selectedPage.classList.add('active');
-            }
-
-            const navLinks = document.querySelectorAll('.nav-link');
-            navLinks.forEach(link => link.classList.remove('active'));
-            
-            const activeLink = document.querySelector(`[onclick="showPage('${pageName}'); return false;"]`);
-            if (activeLink) {
-                activeLink.classList.add('active');
-            }
-
-            if (pageName === 'placar') renderMatches();
-            if (pageName === 'jogadores') renderPlayers();
-        }
-
-        async function handleCreateMatch(event) {
-            event.preventDefault();
-            const btn = document.getElementById('btnSaveMatch');
-            btn.disabled = true; // TRAVA ANTI-DUPLICATA
-            btn.innerText = 'Salvando...';
-            
-            const data = {
-                time_casa: document.getElementById('time_casa').value,
-                time_fora: document.getElementById('time_fora').value,
-                placar_casa: parseInt(document.getElementById('placar_casa').value),
-                placar_fora: parseInt(document.getElementById('placar_fora').value),
-                data_jogo: document.getElementById('data_jogo').value,
-                status: document.getElementById('status').value
-            };
-
-            try {
-                const response = await fetch(`${API_URL}/matches`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-
-                if (response.ok) {
-                    alert('Partida cadastrada com sucesso!');
-                    event.target.reset();
-                    showPage('placar');
-                } else {
-                    const error = await response.json();
-                    alert('Erro ao cadastrar: ' + error.error);
-                }
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro de conexão com o servidor.');
-            } finally {
-                btn.disabled = false;
-                btn.innerText = 'Salvar Partida';
-            }
-        }
-
-        async function renderMatches() {
-            const container = document.getElementById('matchesContainer');
-            try {
-                const response = await fetch(`${API_URL}/matches`);
-                const matches = await response.json();
-                
-                container.innerHTML = '';
-                if (matches.length === 0) {
-                    container.innerHTML = '<p>Nenhuma partida encontrada.</p>';
-                    return;
-                }
-
-                matches.forEach(match => {
-                    const matchCard = document.createElement('div');
-                    matchCard.className = 'match-card';
-                    matchCard.innerHTML = `
-                        <div class="team">
-                            <span class="team-name">${match.time_casa}</span>
-                            <span class="team-score">${match.placar_casa}</span>
-                        </div>
-                        <div class="vs">vs</div>
-                        <div class="team">
-                            <span class="team-score">${match.placar_fora}</span>
-                            <span class="team-name">${match.time_fora}</span>
-                        </div>
-                        <div class="match-footer">
-                            <span class="match-time">${new Date(match.data_jogo).toLocaleDateString()} | ${match.status}</span>
-                            <div>
-                                <button class="btn-edit" onclick="openEditModal('${match.id_jogo}', '${match.time_casa}', '${match.time_fora}', ${match.placar_casa}, ${match.placar_fora}, '${match.data_jogo}', '${match.status}')">✏️ Editar</button>
-                                <button class="btn-delete" onclick="handleDeleteMatch(${match.id_jogo})">🗑️ Excluir</button>
-                            </div>
-                        </div>
-                    `;
-                    container.appendChild(matchCard);
-                });
-            } catch (error) {
-                console.error('Erro ao buscar partidas:', error);
-                container.innerHTML = '<p>Erro ao carregar partidas do servidor.</p>';
-            }
-        }
-
-        function openEditModal(id, casa, fora, pCasa, pFora, data, status) {
-            document.getElementById('edit_id').value = id;
-            document.getElementById('edit_time_casa').value = casa;
-            document.getElementById('edit_time_fora').value = fora;
-            document.getElementById('edit_placar_casa').value = pCasa;
-            document.getElementById('edit_placar_fora').value = pFora;
-            document.getElementById('edit_data_jogo').value = data.split('T')[0];
-            document.getElementById('edit_status').value = status;
-            document.getElementById('editModal').style.display = 'block';
-        }
-
-        function closeModal() { document.getElementById('editModal').style.display = 'none'; }
-
-        async function handleUpdateMatch(event) {
-            event.preventDefault();
-            const id = document.getElementById('edit_id').value;
-            const data = {
-                time_casa: document.getElementById('edit_time_casa').value,
-                time_fora: document.getElementById('edit_time_fora').value,
-                placar_casa: parseInt(document.getElementById('edit_placar_casa').value),
-                placar_fora: parseInt(document.getElementById('edit_placar_fora').value),
-                data_jogo: document.getElementById('edit_data_jogo').value,
-                status: document.getElementById('edit_status').value
-            };
-
-            try {
-                const response = await fetch(`${API_URL}/matches/${id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-
-                if (response.ok) {
-                    alert('Partida atualizada!');
-                    closeModal();
-                    renderMatches();
-                } else {
-                    alert('Erro ao atualizar.');
-                }
-            } catch (error) {
-                alert('Erro de conexão.');
-            }
-        }
-
-        async function handleDeleteMatch(id) {
-            if (!confirm('Tem certeza que deseja excluir esta partida?')) return;
-            try {
-                const response = await fetch(`${API_URL}/matches/${id}`, { method: 'DELETE' });
-                if (response.ok) {
-                    alert('Partida excluída!');
-                    renderMatches();
-                } else {
-                    alert('Erro ao excluir.');
-                }
-            } catch (error) {
-                alert('Erro de conexão.');
-            }
-        }
-
-        function handleLogin(event) {
-            event.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            if (email === 'demo@ifscore.com' && password === '123456') {
-                alert('Login realizado com sucesso!');
-                showPage('placar');
-            } else {
-                alert('Email ou senha inválidos!');
-            }
-        }
-
-        async function renderPlayers() {
-            const container = document.getElementById('playersContainer');
-            try {
-                const response = await fetch(`${API_URL}/users`);
-                const users = await response.json();
-                container.innerHTML = users.map(user => `
-                    <div class="player-card">
-                        <div class="player-avatar">👤</div>
-                        <h3>${user.nome_completo}</h3>
-                        <p class="player-rating">${user.perfil}</p>
-                        <p class="player-team">${user.email}</p>
-                    </div>
-                `).join('');
-            } catch (error) {
-                container.innerHTML = '<p>Erro ao carregar dados do servidor.</p>';
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            showPage('home');
-        });
-    </script>
-</body>
-</html>
+<script>
+const API_URL='/api'; let token=localStorage.getItem('ifscore_token'); let currentUser=JSON.parse(localStorage.getItem('ifscore_user')||'null');
+const headers=()=>token?{'Content-Type':'application/json','Authorization':`Bearer ${token}`}:{'Content-Type':'application/json'};
+function showPage(name){if((name==='admin'||name==='jogadores')&&!token){showPage('login');setMessage('loginMessage','Faça login para acessar esta área.','error');return}document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(name)?.classList.add('active');document.querySelectorAll('.nav-link').forEach(a=>a.classList.remove('active'));if(name==='placar')renderMatches();if(name==='jogadores')renderPlayers();updateAuthStatus();}
+function setMessage(id,text,type='error'){const el=document.getElementById(id);if(el){el.textContent=text;el.className=type==='success'?'auth-success':'auth-error';}}
+function updateAuthStatus(){const el=document.getElementById('authStatus');el.textContent=currentUser?`Sair (${currentUser.nome_completo})`:'Não autenticado';el.classList.toggle('logout',!!currentUser)}
+async function handleSignup(e){e.preventDefault();setMessage('signupMessage','');const body={nome_completo:signupName.value,email:signupEmail.value,senha:signupPassword.value};try{const r=await fetch(`${API_URL}/auth/signup`,{method:'POST',headers:headers(),body:JSON.stringify(body)});const d=await r.json();if(!r.ok)return setMessage('signupMessage',d.erro||'Não foi possível cadastrar.');setMessage('signupMessage','Cadastro realizado. Agora faça login.','success');e.target.reset();setTimeout(()=>showPage('login'),700)}catch(err){setMessage('signupMessage','Servidor indisponível.')}}
+async function handleLogin(e){e.preventDefault();setMessage('loginMessage','');try{const r=await fetch(`${API_URL}/auth/login`,{method:'POST',headers:headers(),body:JSON.stringify({email:loginEmail.value,senha:loginPassword.value})});const d=await r.json();if(!r.ok)return setMessage('loginMessage',d.erro||'Credenciais inválidas.');token=d.token;currentUser=d.usuario;localStorage.setItem('ifscore_token',token);localStorage.setItem('ifscore_user',JSON.stringify(currentUser));updateAuthStatus();setMessage('loginMessage',`Bem-vindo(a), ${currentUser.nome_completo}!`,'success');setTimeout(()=>showPage('admin'),500)}catch(err){setMessage('loginMessage','Servidor indisponível.')}}
+function logout(){token=null;currentUser=null;localStorage.removeItem('ifscore_token');localStorage.removeItem('ifscore_user');updateAuthStatus();showPage('home')}
+async function renderMatches(){const c=document.getElementById('matchesContainer');try{const r=await fetch(`${API_URL}/matches`);const matches=await r.json();c.innerHTML=matches.length?matches.map(m=>`<div class="match-card"><div class="team"><span class="team-name">${m.time_casa}</span><span class="team-score">${m.placar_casa}</span></div><div class="vs">vs</div><div class="team"><span class="team-score">${m.placar_fora}</span><span class="team-name">${m.time_fora}</span></div><div class="match-footer"><span>${new Date(m.data_jogo).toLocaleDateString()} | ${m.status}</span>${token?`<div class="match-actions"><button class="btn-delete" onclick="deleteMatch(${m.id_jogo})">Excluir</button></div>`:''}</div></div>`).join(''):'<p>Nenhuma partida encontrada.</p>'}catch(e){c.innerHTML='<p>Erro ao carregar partidas.</p>'}}
+async function renderPlayers(){const c=document.getElementById('playersContainer');try{const r=await fetch(`${API_URL}/users`,{headers:headers()});if(r.status===401){logout();return}const users=await r.json();c.innerHTML=users.map(u=>`<div class="player-card"><div class="player-avatar">${u.nome_completo.charAt(0).toUpperCase()}</div><h3>${u.nome_completo}</h3><p class="player-rating">${u.papel?.nome_papel||u.perfil}</p><p class="player-team">${u.email}</p></div>`).join('')}catch(e){c.innerHTML='<p>Erro ao carregar usuários.</p>'}}
+async function handleCreateMatch(e){e.preventDefault();if(!token)return showPage('login');const body={time_casa:time_casa.value,time_fora:time_fora.value,placar_casa:Number(placar_casa.value),placar_fora:Number(placar_fora.value),data_jogo:data_jogo.value,status:status.value};try{const r=await fetch(`${API_URL}/matches`,{method:'POST',headers:headers(),body:JSON.stringify(body)});const d=await r.json().catch(()=>({}));if(!r.ok){if(r.status===401)logout();return setMessage('adminMessage',d.erro||d.error||'Não foi possível salvar.')}setMessage('adminMessage','Partida cadastrada com sucesso.','success');e.target.reset();renderMatches();}catch(err){setMessage('adminMessage','Servidor indisponível.')}}
+async function deleteMatch(id){if(!confirm('Excluir esta partida?'))return;const r=await fetch(`${API_URL}/matches/${id}`,{method:'DELETE',headers:headers()});if(r.status===401)return logout();if(r.ok)renderMatches();}
+document.addEventListener('DOMContentLoaded',()=>{updateAuthStatus();showPage('home');});
+</script></body></html>

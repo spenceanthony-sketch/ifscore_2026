@@ -1,53 +1,43 @@
-### Variáveis
 @baseUrl = http://localhost:3000/api
+@senha = 123456
+@email = aluno{{$timestamp}}@ifscore.com
 
-### 1. Testar Rota Inicial do Servidor
-GET http://localhost:3000/
+### Cadastro válido
+POST {{baseUrl}}/auth/signup
+Content-Type: application/json
 
-### --- TESTES DE PARTIDAS (MATCHES) ---
+{"nome_completo":"Aluno IFScore","email":"{{email}}","senha":"{{senha}}"}
 
-### Listar todas as partidas
-GET {{baseUrl}}/matches
+### Cadastro duplicado — deve retornar 409
+POST {{baseUrl}}/auth/signup
+Content-Type: application/json
 
-### Criar uma nova partida
+{"nome_completo":"Aluno IFScore","email":"{{email}}","senha":"{{senha}}"}
+
+### Login válido — copie o token retornado para @token
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{"email":"{{email}}","senha":"{{senha}}"}
+
+@token = COLE_O_TOKEN_JWT_AQUI
+
+### Login inválido — deve retornar 401
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{"email":"{{email}}","senha":"errada"}
+
+### Rota protegida sem token — deve retornar 401
+GET {{baseUrl}}/auth/me
+
+### Rota protegida com token — deve retornar 200
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{token}}
+
+### Criação de partida protegida — deve retornar 201
 POST {{baseUrl}}/matches
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
-{
-    "team1": "Vasco",
-    "score1": 1,
-    "team2": "Botafogo",
-    "score2": 0,
-    "time": "16:00"
-}
-
-### Atualizar uma partida (ID 1)
-PUT {{baseUrl}}/matches/1
-Content-Type: application/json
-
-{
-    "score1": 3,
-    "score2": 2
-}
-
-### Deletar uma partida (ID 2)
-DELETE {{baseUrl}}/matches/2
-
-
-### --- TESTES DE JOGADORES (PLAYERS) ---
-
-### Listar todos os jogadores
-GET {{baseUrl}}/players
-
-### Criar um novo jogador
-POST {{baseUrl}}/players
-Content-Type: application/json
-
-{
-    "name": "Gabriel Barbosa",
-    "rating": 2.85,
-    "team": "Flamengo"
-}
-
-### Deletar um jogador (ID 3)
-DELETE {{baseUrl}}/players/3
+{"time_casa":"Vasco","placar_casa":1,"time_fora":"Botafogo","placar_fora":0,"data_jogo":"2026-09-01","status":"Agendado"}
