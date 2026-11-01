@@ -67,6 +67,19 @@ model Jogo {
   placar_fora Int      @default(0)
   status      String   @default("Agendado")
   estatisticas EstatisticaJogo[]
+  arquivo     ArquivoPartida?
+}
+
+model ArquivoPartida {
+  id_arquivo       Int      @id @default(autoincrement())
+  nome_original    String
+  nome_servidor    String   @unique
+  caminho_publico  String
+  mime_type        String
+  tamanho_bytes    Int
+  data_upload      DateTime @default(now())
+  id_jogo          Int      @unique
+  jogo             Jogo     @relation(fields: [id_jogo], references: [id_jogo], onDelete: Cascade)
 }
 
 model EstatisticaJogo {

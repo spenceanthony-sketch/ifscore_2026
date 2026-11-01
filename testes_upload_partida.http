@@ -1,0 +1,86 @@
+@baseUrl = http://localhost:3000/api
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiZGVtb0BpZnNjb3JlLmNvbSIsInBlcmZpbCI6IlAwMSIsImlhdCI6MTc5MzU1NDg5NSwiZXhwIjoxNzkzNTYyMDk1fQ.PyU92sxJxA-Nso4CSdzwDoD2D1aw7ioo7oiVlPYM_s4
+
+### 1. Sem autenticação: o Multer não deve processar o arquivo (401)
+POST {{baseUrl}}/matches/1/arquivo
+Content-Type: multipart/form-data; boundary=UploadBoundary
+
+--UploadBoundary
+Content-Disposition: form-data; name="arquivo_partida"; filename="match.png"
+Content-Type: image/png
+
+< ./test-fixtures/match.png
+--UploadBoundary--
+
+### 2. Criar uma partida para os testes
+# @name createMatchUpload
+POST {{baseUrl}}/matches
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "time_casa": "IFPB",
+  "time_fora": "IFScore FC",
+  "placar_casa": 1,
+  "placar_fora": 0,
+  "data_jogo": "2026-11-01",
+  "status": "Finalizado"
+}
+
+### 3. Upload válido: esperado 201
+# @name uploadMatch
+POST {{baseUrl}}/matches/{{createMatchUpload.response.body.$.id_jogo}}/arquivo
+Authorization: Bearer {{adminToken}}
+Content-Type: multipart/form-data; boundary=UploadBoundary
+
+--UploadBoundary
+Content-Disposition: form-data; name="arquivo_partida"; filename="dados-partida.png"
+Content-Type: image/png
+
+< ./test-fixtures/match.png
+--UploadBoundary--
+
+@uploadedPath = {{uploadMatch.response.body.$.arquivo.caminho_publico}}
+
+### 4. Acesso ao caminho público retornado: esperado 200 e Content-Type image/png
+GET http://localhost:3000{{uploadedPath}}
+
+### 5. Tipo MIME não permitido: esperado 400; nada deve ser gravado
+PUT {{baseUrl}}/matches/{{createMatchUpload.response.body.$.id_jogo}}/arquivo
+Authorization: Bearer {{adminToken}}
+Content-Type: multipart/form-data; boundary=UploadBoundary
+
+--UploadBoundary
+Content-Disposition: form-data; name="arquivo_partida"; filename="dados-partida.txt"
+Content-Type: text/plain
+
+< ./test-fixtures/match.txt
+--UploadBoundary--
+
+### 6. Arquivo acima de 2 MB: esperado 400; nada deve ser gravado
+PUT {{baseUrl}}/matches/{{createMatchUpload.response.body.$.id_jogo}}/arquivo
+Authorization: Bearer {{adminToken}}
+Content-Type: multipart/form-data; boundary=UploadBoundary
+
+--UploadBoundary
+Content-Disposition: form-data; name="arquivo_partida"; filename="dados-partida-grande.png"
+Content-Type: image/png
+
+< ./test-fixtures/match-large.png
+--UploadBoundary--
+
+### 7. Reenvio pelo mesmo usuário: esperado 201 com nome_servidor diferente
+# O novo caminho substitui o registro anterior; não é criado um segundo ArquivoPartida.
+# @name replaceMatch
+PUT {{baseUrl}}/matches/{{createMatchUpload.response.body.$.id_jogo}}/arquivo
+Authorization: Bearer {{adminToken}}
+Content-Type: multipart/form-data; boundary=UploadBoundary
+
+--UploadBoundary
+Content-Disposition: form-data; name="arquivo_partida"; filename="dados-partida-atualizados.png"
+Content-Type: image/png
+
+< ./test-fixtures/match.png
+--UploadBoundary--
+
+@reuploadedPath = {{replaceMatch.response.body.$.arquivo.caminho_publico}}

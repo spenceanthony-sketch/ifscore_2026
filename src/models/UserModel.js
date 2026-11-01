@@ -43,7 +43,6 @@ class UserModel {
     });
   }
 
-  // Usado para converter senhas antigas em texto puro para bcrypt. Usado para primeira conta test "Adm Demo"
   static async updatePassword(id, senha) {
     return prisma.usuario.update({
       where: { id_usuario: Number(id) },
@@ -51,10 +50,16 @@ class UserModel {
     });
   }
 
-  static async delete(id) {
-    return prisma.usuario.delete({
-      where: { id_usuario: Number(id) }
+  static async update(id, data) {
+    return prisma.usuario.update({
+      where: { id_usuario: Number(id) },
+      data,
+      select: publicUserSelect
     });
+  }
+
+  static async delete(id) {
+    return prisma.usuario.delete({ where: { id_usuario: Number(id) } });
   }
 }
 

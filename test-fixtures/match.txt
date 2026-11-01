@@ -1,0 +1,1 @@
+este arquivo não é uma imagem e deve ser rejeitado pelo filtro MIME.

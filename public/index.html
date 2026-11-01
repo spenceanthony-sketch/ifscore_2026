@@ -21,24 +21,263 @@
 <section id="home" class="page active"><div class="container"><div class="header"><h1>SUA PAIXÃO POR ESPORTES COMEÇA AQUI</h1><h2>IFScore</h2><p>Acompanhe placares, estatísticas e seus times favoritos em tempo real</p></div><div class="stats"><div class="stat-card"><span class="stat-number">150+</span><p class="stat-label">Jogos Acompanhados</p></div><div class="stat-card"><span class="stat-number">2.5K</span><p class="stat-label">Usuários Ativos</p></div><div class="stat-card"><span class="stat-number">98%</span><p class="stat-label">Precisão de Dados</p></div></div></div></section>
 
 <section id="login" class="page"><div class="container"><div class="auth-box"><h2>Entrar</h2><form onsubmit="handleLogin(event)"><input type="email" id="loginEmail" placeholder="E-mail" required><input type="password" id="loginPassword" placeholder="Senha" required minlength="6"><button class="btn-primary">Entrar</button><p id="loginMessage" class="auth-error"></p></form><p class="form-text">Ainda não possui conta? <a href="#" onclick="showPage('signup');return false">Cadastre-se</a></p></div></div></section>
-<section id="signup" class="page"><div class="container"><div class="auth-box"><h2>Criar conta</h2><form onsubmit="handleSignup(event)"><input type="text" id="signupName" placeholder="Nome completo" required minlength="2"><input type="email" id="signupEmail" placeholder="E-mail" required><input type="password" id="signupPassword" placeholder="Senha (mínimo 6 caracteres)" required minlength="6"><button class="btn-primary">Cadastrar</button><p id="signupMessage" class="auth-error"></p></form></div></div></section>
+<section id="signup" class="page"><div class="container"><div class="auth-box"><h2>Criar conta</h2><form onsubmit="handleSignup(event)"><input type="text" id="signupName" placeholder="Nome completo" required minlength="2"><input type="email" id="signupEmail" placeholder="E-mail" required><input type="password" id="signupPassword" placeholder="Senha (mínimo 6 caracteres)" required minlength="6" oninput="validatePasswordConfirmation()"><input type="password" id="signupPasswordConfirm" placeholder="Confirme a senha" required minlength="6" oninput="validatePasswordConfirmation()"><button class="btn-primary">Cadastrar</button><p id="signupMessage" class="auth-error"></p></form></div></div></section>
 
 <section id="placar" class="page"><div class="container"><h2>Placares</h2><div id="matchesContainer" class="matches"><p>Carregando partidas...</p></div></div></section>
 <section id="jogadores" class="page"><div class="container"><h2>Usuários cadastrados</h2><div id="playersContainer" class="players"><p>Faça login para consultar os usuários.</p></div></div></section>
-<section id="admin" class="page"><div class="container"><h2>Área administrativa protegida</h2><p class="protected-note">Somente usuários autenticados podem cadastrar e editar partidas.</p><div class="auth-box"><form onsubmit="handleCreateMatch(event)"><input type="text" id="time_casa" placeholder="Time da casa" required><input type="text" id="time_fora" placeholder="Time de fora" required><input type="number" id="placar_casa" value="0" min="0"><input type="number" id="placar_fora" value="0" min="0"><input type="date" id="data_jogo" required><select id="status"><option>Agendado</option><option>Em andamento</option><option>Finalizado</option></select><button class="btn-primary">Salvar partida</button><p id="adminMessage" class="auth-error"></p></form></div></div></section>
+<section id="admin" class="page"><div class="container"><h2>Área administrativa protegida</h2><p class="protected-note">Somente administradores (perfil P01) podem criar, editar e apagar partidas e usuários.</p><div class="auth-box"><form onsubmit="handleCreateMatch(event)"><input type="text" id="time_casa" placeholder="Time da casa" required><input type="text" id="time_fora" placeholder="Time de fora" required><input type="number" id="placar_casa" value="0" min="0"><input type="number" id="placar_fora" value="0" min="0"><input type="date" id="data_jogo" required><label>Arquivo da partida (JPEG, PNG ou GIF; máximo 2 MB)<input type="file" id="matchFile" accept="image/jpeg,image/png,image/gif"></label><select id="status"><option>Agendado</option><option>Em andamento</option><option>Finalizado</option></select><button class="btn-primary">Salvar partida</button><p id="adminMessage" class="auth-error"></p></form></div></div></section>
 
 <script>
-const API_URL='/api'; let token=localStorage.getItem('ifscore_token'); let currentUser=JSON.parse(localStorage.getItem('ifscore_user')||'null');
-const headers=()=>token?{'Content-Type':'application/json','Authorization':`Bearer ${token}`}:{'Content-Type':'application/json'};
-function showPage(name){if((name==='admin'||name==='jogadores')&&!token){showPage('login');setMessage('loginMessage','Faça login para acessar esta área.','error');return}document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(name)?.classList.add('active');document.querySelectorAll('.nav-link').forEach(a=>a.classList.remove('active'));if(name==='placar')renderMatches();if(name==='jogadores')renderPlayers();updateAuthStatus();}
-function setMessage(id,text,type='error'){const el=document.getElementById(id);if(el){el.textContent=text;el.className=type==='success'?'auth-success':'auth-error';}}
-function updateAuthStatus(){const el=document.getElementById('authStatus');el.textContent=currentUser?`Sair (${currentUser.nome_completo})`:'Não autenticado';el.classList.toggle('logout',!!currentUser)}
-async function handleSignup(e){e.preventDefault();setMessage('signupMessage','');const body={nome_completo:signupName.value,email:signupEmail.value,senha:signupPassword.value};try{const r=await fetch(`${API_URL}/auth/signup`,{method:'POST',headers:headers(),body:JSON.stringify(body)});const d=await r.json();if(!r.ok)return setMessage('signupMessage',d.erro||'Não foi possível cadastrar.');setMessage('signupMessage','Cadastro realizado. Agora faça login.','success');e.target.reset();setTimeout(()=>showPage('login'),700)}catch(err){setMessage('signupMessage','Servidor indisponível.')}}
-async function handleLogin(e){e.preventDefault();setMessage('loginMessage','');try{const r=await fetch(`${API_URL}/auth/login`,{method:'POST',headers:headers(),body:JSON.stringify({email:loginEmail.value,senha:loginPassword.value})});const d=await r.json();if(!r.ok)return setMessage('loginMessage',d.erro||'Credenciais inválidas.');token=d.token;currentUser=d.usuario;localStorage.setItem('ifscore_token',token);localStorage.setItem('ifscore_user',JSON.stringify(currentUser));updateAuthStatus();setMessage('loginMessage',`Bem-vindo(a), ${currentUser.nome_completo}!`,'success');setTimeout(()=>showPage('admin'),500)}catch(err){setMessage('loginMessage','Servidor indisponível.')}}
-function logout(){token=null;currentUser=null;localStorage.removeItem('ifscore_token');localStorage.removeItem('ifscore_user');updateAuthStatus();showPage('home')}
-async function renderMatches(){const c=document.getElementById('matchesContainer');try{const r=await fetch(`${API_URL}/matches`);const matches=await r.json();c.innerHTML=matches.length?matches.map(m=>`<div class="match-card"><div class="team"><span class="team-name">${m.time_casa}</span><span class="team-score">${m.placar_casa}</span></div><div class="vs">vs</div><div class="team"><span class="team-score">${m.placar_fora}</span><span class="team-name">${m.time_fora}</span></div><div class="match-footer"><span>${new Date(m.data_jogo).toLocaleDateString()} | ${m.status}</span>${token?`<div class="match-actions"><button class="btn-delete" onclick="deleteMatch(${m.id_jogo})">Excluir</button></div>`:''}</div></div>`).join(''):'<p>Nenhuma partida encontrada.</p>'}catch(e){c.innerHTML='<p>Erro ao carregar partidas.</p>'}}
-async function renderPlayers(){const c=document.getElementById('playersContainer');try{const r=await fetch(`${API_URL}/users`,{headers:headers()});if(r.status===401){logout();return}const users=await r.json();c.innerHTML=users.map(u=>`<div class="player-card"><div class="player-avatar">${u.nome_completo.charAt(0).toUpperCase()}</div><h3>${u.nome_completo}</h3><p class="player-rating">${u.papel?.nome_papel||u.perfil}</p><p class="player-team">${u.email}</p></div>`).join('')}catch(e){c.innerHTML='<p>Erro ao carregar usuários.</p>'}}
-async function handleCreateMatch(e){e.preventDefault();if(!token)return showPage('login');const body={time_casa:time_casa.value,time_fora:time_fora.value,placar_casa:Number(placar_casa.value),placar_fora:Number(placar_fora.value),data_jogo:data_jogo.value,status:status.value};try{const r=await fetch(`${API_URL}/matches`,{method:'POST',headers:headers(),body:JSON.stringify(body)});const d=await r.json().catch(()=>({}));if(!r.ok){if(r.status===401)logout();return setMessage('adminMessage',d.erro||d.error||'Não foi possível salvar.')}setMessage('adminMessage','Partida cadastrada com sucesso.','success');e.target.reset();renderMatches();}catch(err){setMessage('adminMessage','Servidor indisponível.')}}
-async function deleteMatch(id){if(!confirm('Excluir esta partida?'))return;const r=await fetch(`${API_URL}/matches/${id}`,{method:'DELETE',headers:headers()});if(r.status===401)return logout();if(r.ok)renderMatches();}
-document.addEventListener('DOMContentLoaded',()=>{updateAuthStatus();showPage('home');});
+const API_URL = '/api';
+let token = localStorage.getItem('ifscore_token');
+let currentUser = JSON.parse(localStorage.getItem('ifscore_user') || 'null');
+
+const isAdmin = () => Boolean(token && currentUser && currentUser.perfil === 'P01');
+const headers = () => token
+  ? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+  : { 'Content-Type': 'application/json' };
+const authOnlyHeaders = () => token ? { Authorization: `Bearer ${token}` } : {};
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>'"]/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+  }[char]));
+}
+
+function showApiErrors(data, fallbackId) {
+  const issues = Array.isArray(data.issues) ? data.issues : [];
+  issues.forEach(issue => {
+    const field = issue.path?.[0];
+    const input = field === 'nome_completo' ? signupName : field === 'email' ? signupEmail : field === 'senha' ? signupPassword : null;
+    if (input) input.setCustomValidity(issue.message);
+  });
+  if (data.erro && data.erro.toLowerCase().includes('e-mail')) signupEmail.setCustomValidity(data.erro);
+  setMessage(fallbackId, issues.map(issue => `${issue.path?.join('.') || 'campo'}: ${issue.message}`).join(' | ') || data.erro || 'Não foi possível concluir a operação.');
+}
+
+function validatePasswordConfirmation() {
+  if (!signupPasswordConfirm) return true;
+  const valid = signupPassword.value === signupPasswordConfirm.value;
+  signupPasswordConfirm.setCustomValidity(valid ? '' : 'As senhas não coincidem.');
+  return valid;
+}
+
+function setMessage(id, text, type = 'error') {
+  const element = document.getElementById(id);
+  if (element) {
+    element.textContent = text;
+    element.className = type === 'success' ? 'auth-success' : 'auth-error';
+  }
+}
+
+function updateAuthStatus() {
+  const element = document.getElementById('authStatus');
+  if (!element) return;
+  element.textContent = currentUser
+    ? `Sair (${currentUser.nome_completo}${isAdmin() ? ' — Administrador' : ''})`
+    : 'Não autenticado';
+  element.classList.toggle('logout', Boolean(currentUser));
+}
+
+function showPage(name) {
+  if ((name === 'admin' || name === 'jogadores') && !token) {
+    showPage('login');
+    setMessage('loginMessage', 'Faça login para acessar esta área.');
+    return;
+  }
+  if ((name === 'admin' || name === 'jogadores') && !isAdmin()) {
+    showPage('placar');
+    setMessage('adminMessage', 'Acesso permitido somente para administradores (perfil P01).');
+    return;
+  }
+  document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+  document.getElementById(name)?.classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+  if (name === 'placar') renderMatches();
+  if (name === 'jogadores') renderPlayers();
+  updateAuthStatus();
+}
+
+async function handleSignup(event) {
+  event.preventDefault();
+  if (!validatePasswordConfirmation()) return;
+  setMessage('signupMessage', '');
+  const body = { nome_completo: signupName.value, email: signupEmail.value, senha: signupPassword.value };
+  try {
+    const response = await fetch(`${API_URL}/auth/signup`, { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+    const data = await response.json();
+    if (!response.ok) return showApiErrors(data, 'signupMessage');
+    setMessage('signupMessage', 'Cadastro realizado. Agora faça login.', 'success');
+    event.target.reset();
+    setTimeout(() => showPage('login'), 700);
+  } catch (error) {
+    setMessage('signupMessage', 'Servidor indisponível.');
+  }
+}
+
+async function handleLogin(event) {
+  event.preventDefault();
+  setMessage('loginMessage', '');
+  try {
+    const response = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST', headers: headers(),
+      body: JSON.stringify({ email: loginEmail.value, senha: loginPassword.value })
+    });
+    const data = await response.json();
+    if (!response.ok) return setMessage('loginMessage', data.erro || 'Credenciais inválidas.');
+    token = data.token;
+    currentUser = data.usuario;
+    localStorage.setItem('ifscore_token', token);
+    localStorage.setItem('ifscore_user', JSON.stringify(currentUser));
+    updateAuthStatus();
+    setMessage('loginMessage', `Bem-vindo(a), ${currentUser.nome_completo}!`, 'success');
+    setTimeout(() => showPage(isAdmin() ? 'admin' : 'placar'), 500);
+  } catch (error) {
+    setMessage('loginMessage', 'Servidor indisponível.');
+  }
+}
+
+function logout() {
+  token = null;
+  currentUser = null;
+  localStorage.removeItem('ifscore_token');
+  localStorage.removeItem('ifscore_user');
+  updateAuthStatus();
+  showPage('home');
+}
+
+async function renderMatches() {
+  const container = document.getElementById('matchesContainer');
+  try {
+    const response = await fetch(`${API_URL}/matches`);
+    const matches = await response.json();
+    container.innerHTML = matches.length ? matches.map(match => `
+      <div class="match-card">
+        <div class="team"><span class="team-name">${escapeHtml(match.time_casa)}</span><span class="team-score">${match.placar_casa}</span></div>
+        <div class="vs">vs</div>
+        <div class="team"><span class="team-score">${match.placar_fora}</span><span class="team-name">${escapeHtml(match.time_fora)}</span></div>
+        <div class="match-footer">
+          <span>${new Date(match.data_jogo).toLocaleDateString()} | ${escapeHtml(match.status)}</span>
+          ${match.arquivo ? `<figure class="match-file"><img src="${escapeHtml(match.arquivo.caminho_publico)}" alt="Arquivo da partida ${match.id_jogo}" style="max-width:220px;max-height:140px"><figcaption>${escapeHtml(match.arquivo.nome_original)} — <a href="${escapeHtml(match.arquivo.caminho_publico)}" target="_blank" rel="noopener">abrir arquivo</a></figcaption></figure>` : '<small>Sem arquivo da partida</small>'}
+          ${isAdmin() ? `<div class="match-actions"><button class="btn-delete" onclick="deleteMatch(${match.id_jogo})">Excluir</button><input type="file" id="replace-file-${match.id_jogo}" accept="image/jpeg,image/png,image/gif"><button class="btn-primary" onclick="uploadExistingMatchFile(${match.id_jogo})">Enviar/substituir arquivo</button></div>` : ''}
+        </div>
+      </div>`).join('') : '<p>Nenhuma partida encontrada.</p>';
+  } catch (error) {
+    container.innerHTML = '<p>Erro ao carregar partidas.</p>';
+  }
+}
+
+async function renderPlayers() {
+  const container = document.getElementById('playersContainer');
+  if (!isAdmin()) {
+    container.innerHTML = '<p>A listagem de usuários é exclusiva do administrador.</p>';
+    return;
+  }
+  try {
+    const response = await fetch(`${API_URL}/users`, { headers: headers() });
+    if (response.status === 401) return logout();
+    if (response.status === 403) {
+      container.innerHTML = '<p>Acesso restrito ao administrador.</p>';
+      return;
+    }
+    const users = await response.json();
+    container.innerHTML = users.map(user => `
+      <div class="player-card">
+        <div class="player-avatar">${escapeHtml(user.nome_completo?.charAt(0).toUpperCase())}</div>
+        <h3>${escapeHtml(user.nome_completo)}</h3>
+        <p class="player-rating">${escapeHtml(user.papel?.nome_papel || user.perfil)}</p>
+        <p class="player-team">${escapeHtml(user.email)}</p>
+        ${Number(user.id_usuario) !== Number(currentUser.id_usuario) ? `<button class="btn-delete" onclick="deleteUser(${user.id_usuario}, '${escapeHtml(user.email)}')">Excluir usuário</button>` : '<small>Conta administrativa atual</small>'}
+      </div>`).join('') || '<p>Nenhum usuário encontrado.</p>';
+  } catch (error) {
+    container.innerHTML = '<p>Erro ao carregar usuários.</p>';
+  }
+}
+
+async function handleCreateMatch(event) {
+  event.preventDefault();
+  if (!isAdmin()) return setMessage('adminMessage', 'Somente administradores (P01) podem criar partidas.');
+  const body = {
+    time_casa: time_casa.value, time_fora: time_fora.value,
+    placar_casa: Number(placar_casa.value), placar_fora: Number(placar_fora.value),
+    data_jogo: data_jogo.value, status: status.value
+  };
+  try {
+    const response = await fetch(`${API_URL}/matches`, { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      if (response.status === 401) return logout();
+      return setMessage('adminMessage', data.erro || 'Não foi possível salvar.');
+    }
+    const selectedFile = document.getElementById('matchFile')?.files?.[0];
+    if (selectedFile) {
+      const upload = await uploadMatchFile(data.id_jogo, selectedFile, 'POST');
+      if (!upload.ok) {
+        const uploadData = await upload.json().catch(() => ({}));
+        setMessage('adminMessage', `Partida criada, mas o arquivo não foi enviado: ${uploadData.erro || 'erro no upload'}`);
+        event.target.reset();
+        renderMatches();
+        return;
+      }
+    }
+    setMessage('adminMessage', 'Partida e arquivo cadastrados com sucesso.', 'success');
+    event.target.reset();
+    renderMatches();
+  } catch (error) {
+    setMessage('adminMessage', 'Servidor indisponível.');
+  }
+}
+
+
+async function uploadMatchFile(id, file, method = 'PUT') {
+  if (!file) return { ok: false, json: async () => ({ erro: 'Selecione um arquivo da partida.' }) };
+  const formData = new FormData();
+  formData.append('arquivo_partida', file);
+  try {
+    return await fetch(`${API_URL}/matches/${id}/arquivo`, {
+      method,
+      headers: authOnlyHeaders(),
+      body: formData
+    });
+  } catch (error) {
+    return { ok: false, json: async () => ({ erro: 'Servidor indisponível.' }) };
+  }
+}
+
+async function uploadExistingMatchFile(id) {
+  if (!isAdmin()) return alert('Somente administradores podem enviar arquivos.');
+  const input = document.getElementById(`replace-file-${id}`);
+  const response = await uploadMatchFile(id, input?.files?.[0], 'PUT');
+  const data = await response.json().catch(() => ({}));
+  if (response.status === 401) return logout();
+  if (!response.ok) return alert(data.erro || 'Não foi possível enviar o arquivo.');
+  alert('Arquivo da partida atualizado com sucesso.');
+  renderMatches();
+}
+
+async function deleteMatch(id) {
+  if (!isAdmin()) return setMessage('adminMessage', 'Somente administradores podem excluir partidas.');
+  if (!confirm('Excluir esta partida?')) return;
+  const response = await fetch(`${API_URL}/matches/${id}`, { method: 'DELETE', headers: headers() });
+  if (response.status === 401) return logout();
+  if (response.status === 403) return alert('Acesso restrito ao administrador.');
+  if (response.ok) renderMatches();
+  else alert('Não foi possível excluir a partida.');
+}
+
+async function deleteUser(id, email) {
+  if (!isAdmin()) return;
+  if (!confirm(`Excluir o usuário ${email}?`)) return;
+  const response = await fetch(`${API_URL}/users/${id}`, { method: 'DELETE', headers: headers() });
+  if (response.status === 401) return logout();
+  if (response.status === 403) return alert('Acesso restrito ao administrador.');
+  if (response.status === 409) return alert('Este usuário possui registros vinculados e não pode ser excluído.');
+  if (response.ok) renderPlayers();
+  else alert('Não foi possível excluir o usuário.');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateAuthStatus();
+  showPage('home');
+});
 </script></body></html>
