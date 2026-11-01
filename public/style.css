@@ -348,3 +348,72 @@ body {
         margin: 0;
     }
 }
+
+/* Organização dos cards e controles de arquivo das partidas */
+.matches {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    align-items: start;
+}
+
+.match-card {
+    min-width: 0;
+    overflow: hidden;
+    padding: 1.5rem;
+}
+
+.match-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    width: 100%;
+    margin-top: 1.2rem;
+}
+
+.match-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.7rem;
+    width: 100%;
+}
+
+.match-actions input[type="file"] {
+    width: 100%;
+    box-sizing: border-box;
+    color: #00ff00;
+    font-size: 0.9rem;
+}
+
+.match-actions button {
+    width: 100%;
+    white-space: normal;
+}
+
+.match-file {
+    margin: 0;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.match-file img {
+    display: block;
+    width: 100%;
+    max-width: 220px;
+    max-height: 160px;
+    object-fit: contain;
+    margin: 0 auto 0.6rem;
+}
+
+.match-file figcaption {
+    overflow-wrap: anywhere;
+    line-height: 1.5;
+}
+
+@media (max-width: 700px) {
+    .matches {
+        grid-template-columns: 1fr;
+    }
+}

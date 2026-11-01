@@ -1,31 +1,66 @@
 const prisma = require('../lib/prisma');
 
+const publicUserSelect = {
+  id_usuario: true,
+  nome_completo: true,
+  email: true,
+  data_registro: true,
+  perfil: true,
+  papel: { select: { id_papel: true, nome_papel: true } }
+};
+
 class UserModel {
-    static async getAll() {
-        return await prisma.usuario.findMany({
-            include: {
-                papel: true
-            }
-        });
-    }
+  static async getAll() {
+    return prisma.usuario.findMany({
+      select: publicUserSelect,
+      orderBy: { id_usuario: 'asc' }
+    });
+  }
 
-    static async create(data) {
-        return await prisma.usuario.create({
-            data: {
-                senha: data.senha,
-                nome_completo: data.nome_completo,
-                email: data.email,
-                perfil: data.perfil, // Deve ser um ID de papel existente
-                data_registro: new Date()
-            }
-        });
-    }
+  static async create(data) {
+    return prisma.usuario.create({
+      data: {
+        senha: data.senha,
+        nome_completo: data.nome_completo,
+        email: data.email,
+        perfil: data.perfil || 'P02'
+      },
+      select: publicUserSelect
+    });
+  }
 
-    static async findByEmail(email) {
-        return await prisma.usuario.findUnique({
-            where: { email }
-        });
-    }
+  static async findByEmail(email) {
+    return prisma.usuario.findUnique({
+      where: { email },
+      include: { papel: true }
+    });
+  }
+
+  static async findById(id) {
+    return prisma.usuario.findUnique({
+      where: { id_usuario: Number(id) },
+      select: publicUserSelect
+    });
+  }
+
+  static async updatePassword(id, senha) {
+    return prisma.usuario.update({
+      where: { id_usuario: Number(id) },
+      data: { senha }
+    });
+  }
+
+  static async update(id, data) {
+    return prisma.usuario.update({
+      where: { id_usuario: Number(id) },
+      data,
+      select: publicUserSelect
+    });
+  }
+
+  static async delete(id) {
+    return prisma.usuario.delete({ where: { id_usuario: Number(id) } });
+  }
 }
 
 module.exports = UserModel;
