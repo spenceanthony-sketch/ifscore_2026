@@ -1,0 +1,23 @@
+#Os comandos abaixo devem ser utilizados em sequência para garantir que o novo codespace criado possa atuar normalmente, e de forma independente aos outros codespace/main, do repositório.
+
+
+cd /workspaces/ifscore_2026 #garantir que você esteja REALMENTE no nível  certo
+
+cp .env.example .env 
+code .env
+
+npm install
+npx prisma generate
+npx prisma validate
+npx prisma migrate deploy
+
+mkdir -p uploads/matches
+touch uploads/matches/.gitkeep
+
+node prisma/seed.js
+npm start
+
+
+#caso seu JWt do env esteja vazio, use o comando abaixo para criar um hash. Copie e o cole no lugar indicado por "JWT_SECRET=COLE_AQUI_O_SEGREDO_GERADO"
+
+openssl rand -hex 32
